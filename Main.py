@@ -6,11 +6,17 @@ Created on Tue May  7 11:26:22 2019
 """
 
 from DataGenerator import generateData
-from Preprocessing import deleteFeaturesRandomly
 
+NUMBER_OF_CLASSES = 4
+NUMBER_OF_FEATURES = NUMBER_OF_CLASSES*2
+NUMBER_OF_FEATURES_PER_CLASS = 200
+TOTAL_NUMBER_OF_RECORDS = NUMBER_OF_CLASSES * NUMBER_OF_FEATURES_PER_CLASS
+    
+FEATURE_MEAN_RANGE = [0, 50]
+    
 RANDOM_NUMBER_SEED = 0
 NUMBER_OF_FEATURES_TO_PRUNE = 4
 
-data, labels = generateData(RANDOM_NUMBER_SEED)
-prunedData = deleteFeaturesRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE, 
-                                    randomNumberSeed=RANDOM_NUMBER_SEED)
+data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
+                            NUMBER_OF_FEATURES_PER_CLASS, FEATURE_MEAN_RANGE,
+                            RANDOM_NUMBER_SEED)
