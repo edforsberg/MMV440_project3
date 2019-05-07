@@ -23,15 +23,15 @@ def deleteFeaturesRandomly(data, labels, nFeaturesToDelete,
         np.random.seed(randomNumberSeed)
     
     distinctClasses = np.unique(labels)
-    
+    prunedData = data.copy()
     
     for classLabel in distinctClasses:
         featureIndicesToZero = np.random.choice(list(range(nFeatures)), 
                                                 nFeaturesToDelete,
                                                 replace=False)
-        data[labels==classLabel, featureIndicesToZero[:, np.newaxis]] = 0
+        prunedData[labels==classLabel, featureIndicesToZero[:, np.newaxis]] = 0
         
-    return data
+    return prunedData
 
 def addNoisyData(data, nNoisyFeatures, _range=None):
     
