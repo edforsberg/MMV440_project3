@@ -7,8 +7,31 @@ Created on Tue May  7 11:26:49 2019
 import numpy as np
 
 
-def deleteFeaturesRandomly(data, numberOfClasses):
-    pass
+def deleteFeaturesRandomly(data, labels, nFeaturesToDelete, 
+                           randomNumberSeed=None):
+    
+    if not isinstance(data, np.ndarray):
+        data = np.ndarray(data)
+        
+    nRecords, nFeatures = data.shape
+    
+    if nFeaturesToDelete > nFeatures:
+        raise Exception("Number of features to prune cannot be greater than"+
+                        " the number of features available in the data set.")
+        
+    if randomNumberSeed != None:
+        np.random.seed(randomNumberSeed)
+    
+    distinctClasses = np.unique(labels)
+    
+    
+    for classLabel in distinctClasses:
+        featureIndicesToZero = np.random.choice(list(range(nFeatures)), 
+                                                nFeaturesToDelete,
+                                                replace=False)
+        data[labels==classLabel, featureIndicesToZero[:, np.newaxis]] = 0
+        
+    return data
 
 def addNoisyData(data, nNoisyFeatures, _range=None):
     
