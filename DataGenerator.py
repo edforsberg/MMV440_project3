@@ -12,7 +12,7 @@ def generateData(numberOfClasses, numberOfFeatures, numberOfRecordsPerClass,
     # Initialize data nxp
     data = np.empty((TOTAL_NUMBER_OF_RECORDS, numberOfFeatures))
     for i in range(numberOfClasses):
-        rowRangeForCurrentClass = range(i*200,(i+1)*200)
+        rowRangeForCurrentClass = range(i*numberOfRecordsPerClass,(i+1)*numberOfRecordsPerClass)
         generatedFeatures = np.random.multivariate_normal(featureDistributionData[i].featureMeans,
                                                         featureDistributionData[i].featureCovariances,
                                                         size=(numberOfRecordsPerClass))
@@ -20,6 +20,13 @@ def generateData(numberOfClasses, numberOfFeatures, numberOfRecordsPerClass,
     
     labels = list(range(numberOfClasses))
     labelsArray = np.repeat(labels, numberOfRecordsPerClass)
+    
+    #Shuffle with labels
+    concatenatedData = np.concatenate((data,labelsArray[:,np.newaxis]), axis=1)
+    np.random.shuffle(concatenatedData)
+    
+    data = concatenatedData[:,:-1]
+    labelsArray = concatenatedData[:,-1]
     
     return (data, labelsArray)
 
