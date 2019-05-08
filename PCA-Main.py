@@ -5,6 +5,7 @@ Created on Tue May  7 18:07:06 2019
 @author: kaany
 """
 from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -13,32 +14,45 @@ from Preprocessing import deleteFeaturesRandomly
 
 NUMBER_OF_CLASSES = 4
 NUMBER_OF_FEATURES = NUMBER_OF_CLASSES*2
-NUMBER_OF_FEATURES_PER_CLASS = 200
+NUMBER_OF_FEATURES_PER_CLASS = 300
 TOTAL_NUMBER_OF_RECORDS = NUMBER_OF_CLASSES * NUMBER_OF_FEATURES_PER_CLASS
     
-FEATURE_MEAN_RANGE = [0, 10]
+FEATURE_MEAN_RANGE = [0, 50]
 
-RANDOM_NUMBER_SEED = 3
+RANDOM_NUMBER_SEED = 2
 NUMBER_OF_FEATURES_TO_PRUNE = 4
+
+TEST_SIZE_PERCENTAGE = 0.2
 
 np.random.seed(RANDOM_NUMBER_SEED)
 
-trainData, trainLabels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
+data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
                             NUMBER_OF_FEATURES_PER_CLASS, FEATURE_MEAN_RANGE,
                             RANDOM_NUMBER_SEED)
-prunedtrainData = deleteFeaturesRandomly(trainData, trainLabels, NUMBER_OF_FEATURES_TO_PRUNE, 
+prunedtrainData = deleteFeaturesRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE, 
                                     randomNumberSeed=RANDOM_NUMBER_SEED)
 
-distincttrainLabels = np.unique(trainLabels)
+X_train, X_test, y_train, y_test = train_test_split(prunedtrainData, labels,
+                                                    test_size=TEST_SIZE_PERCENTAGE)
 
-pca = PCA()
-pcaTrainData = pca.fit_transform(prunedtrainData)
+distincttrainLabels = np.unique(labels)
 
 plt.figure()
 plt.title("Feature Selection With PCA")
 plt.xlabel("PC1")
 plt.ylabel("PC2")
 for label in distincttrainLabels:    
-    plt.scatter(pcaTrainData[trainLabels==label,0], pcaTrainData[trainLabels==label,1],
+    plt.scatter(X_train[y_train==label,0], X_train[y_train==label,1],
+                c=np.random.rand(3,))
+
+pca = PCA()
+pcaTrainData = pca.fit_transform(X_train)
+
+plt.figure()
+plt.title("Feature Selection With PCA")
+plt.xlabel("PC1")
+plt.ylabel("PC2")
+for label in distincttrainLabels:    
+    plt.scatter(pcaTrainData[y_train==label,0], pcaTrainData[y_train==label,1],
                 c=np.random.rand(3,))
     
