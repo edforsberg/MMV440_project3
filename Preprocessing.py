@@ -18,7 +18,10 @@ def deleteFeaturesRandomly(data, labels, nFeaturesToDelete,
     if nFeaturesToDelete > nFeatures:
         raise Exception("Number of features to prune cannot be greater than"+
                         " the number of features available in the data set.")
-        
+    
+    if nFeaturesToDelete < 1:
+        return data
+    
     if randomNumberSeed != None:
         np.random.seed(randomNumberSeed)
     

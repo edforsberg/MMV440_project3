@@ -16,26 +16,29 @@ NUMBER_OF_FEATURES = NUMBER_OF_CLASSES*2
 NUMBER_OF_FEATURES_PER_CLASS = 200
 TOTAL_NUMBER_OF_RECORDS = NUMBER_OF_CLASSES * NUMBER_OF_FEATURES_PER_CLASS
     
-FEATURE_MEAN_RANGE = [0, 50]
-    
-RANDOM_NUMBER_SEED = 0
+FEATURE_MEAN_RANGE = [0, 10]
+
+RANDOM_NUMBER_SEED = 3
 NUMBER_OF_FEATURES_TO_PRUNE = 4
 
-data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
+np.random.seed(RANDOM_NUMBER_SEED)
+
+trainData, trainLabels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
                             NUMBER_OF_FEATURES_PER_CLASS, FEATURE_MEAN_RANGE,
                             RANDOM_NUMBER_SEED)
-prunedData = deleteFeaturesRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE, 
+prunedtrainData = deleteFeaturesRandomly(trainData, trainLabels, NUMBER_OF_FEATURES_TO_PRUNE, 
                                     randomNumberSeed=RANDOM_NUMBER_SEED)
 
-distinctLabels = np.unique(labels)
+distincttrainLabels = np.unique(trainLabels)
 
 pca = PCA()
-pcaData = pca.fit_transform(prunedData)
+pcaTrainData = pca.fit_transform(prunedtrainData)
 
 plt.figure()
 plt.title("Feature Selection With PCA")
 plt.xlabel("PC1")
 plt.ylabel("PC2")
-for label in distinctLabels:    
-    plt.scatter(pcaData[labels==label,0], pcaData[labels==label,1],
+for label in distincttrainLabels:    
+    plt.scatter(pcaTrainData[trainLabels==label,0], pcaTrainData[trainLabels==label,1],
                 c=np.random.rand(3,))
+    
