@@ -52,11 +52,6 @@ def initializeFeatureCov(numberOfClasses, numberOfFeatures, randomNumberSeed=Non
         featureCovarianceOfEachClass[i] = symmetricCov
     return featureCovarianceOfEachClass
 
-def removeFeatureFromTestSet(testData, testLabels, trainData, trainLabels):
-    labels = np.unique(trainLabels)
-    
-    for label in labels:
-        pass
         
     
     
