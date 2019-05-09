@@ -115,7 +115,7 @@ plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTestAccuracies,
              yerr=stdTestAccuracies, label="Test Set",
              capthick=2, capsize=10)
 plt.title("Number Of Features to Select vs Accuracy\n" +
-          "Number Of Noisy Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
+          "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
 plt.xlabel("Number Of Features to Select")
 plt.ylabel("Accuracy")
 plt.legend()
