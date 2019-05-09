@@ -19,7 +19,7 @@ NUMBER_OF_CLASSES = 6
 NUMBER_OF_FEATURES = NUMBER_OF_CLASSES*2
 NUMBER_OF_FEATURES_PER_CLASS = 500
 
-FEATURE_MEAN_RANGE = [0, 50]
+FEATURE_MEAN_RANGE = [0, 10]
 
 RANDOM_NUMBER_SEED = 0
 NUMBER_OF_FEATURES_TO_PRUNE = int(NUMBER_OF_FEATURES / 2)
@@ -41,10 +41,6 @@ trainData = transfromFeaturesToNoiseRandomly(data, labels,
                                  NUMBER_OF_FEATURES_TO_PRUNE,
                                  NOISE_MEAN, NOISE_STD,
                                  randomNumberSeed=RANDOM_NUMBER_SEED)
-
-#trainData = deleteFeaturesRandomly(data, labels,
-#                                 NUMBER_OF_FEATURES_TO_PRUNE,
-#                                 randomNumberSeed=RANDOM_NUMBER_SEED)
 
 X_train, X_test, y_train, y_test = train_test_split(trainData, labels,
                                                     test_size=TEST_SIZE_PERCENTAGE)
@@ -84,6 +80,8 @@ plt.title("Feature Selection With Backward Selection\n" +
 plt.xlabel("Feature 1")
 plt.ylabel("Feature 2")
 for i, label in enumerate(distinctTrainLabels):
+    _ = np.random.rand() # This avoids the strange thing the random number
+    # generator does while generating new colors for scatter plot
     plt.scatter(xTrainWithSelectedFeatures[y_train == label, 0],
                 xTrainWithSelectedFeatures[y_train == label, 1],
                 c=np.random.rand(3,), label="Class " + str(i),
@@ -91,3 +89,4 @@ for i, label in enumerate(distinctTrainLabels):
 plt.legend()
 
 plotConfusionMatrix(y_test, test_pred, title='Confusion matrix')
+
