@@ -29,7 +29,7 @@ np.random.seed(RANDOM_NUMBER_SEED)
 data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
                             NUMBER_OF_FEATURES_PER_CLASS, FEATURE_MEAN_RANGE,
                             RANDOM_NUMBER_SEED)
-prunedtrainData = deleteFeaturesRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE, 
+prunedtrainData = deleteFeaturesRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE,
                                     randomNumberSeed=RANDOM_NUMBER_SEED)
 
 X_train, X_test, y_train, y_test = train_test_split(prunedtrainData, labels,
@@ -37,11 +37,13 @@ X_train, X_test, y_train, y_test = train_test_split(prunedtrainData, labels,
 
 distincttrainLabels = np.unique(labels)
 
+# PLOT
+
 plt.figure()
 plt.title("Feature Selection With PCA")
 plt.xlabel("PC1")
 plt.ylabel("PC2")
-for label in distincttrainLabels:    
+for label in distincttrainLabels:
     plt.scatter(X_train[y_train==label,0], X_train[y_train==label,1],
                 c=np.random.rand(3,))
 
@@ -52,7 +54,6 @@ plt.figure()
 plt.title("Feature Selection With PCA")
 plt.xlabel("PC1")
 plt.ylabel("PC2")
-for label in distincttrainLabels:    
+for label in distincttrainLabels:
     plt.scatter(pcaTrainData[y_train==label,0], pcaTrainData[y_train==label,1],
                 c=np.random.rand(3,))
-    
