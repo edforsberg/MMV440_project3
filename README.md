@@ -4,3 +4,6 @@ Use Main.py to run the program
 
 Requirements:
 - numpy
+- scikit-learn
+- matplotlib
+- mlxtend
