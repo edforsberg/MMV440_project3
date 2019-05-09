@@ -15,17 +15,17 @@ from matplotlib import pyplot as plt
 from DataGenerator import generateData
 from Preprocessing import transfromFeaturesToNoiseRandomly
 
-NUMBER_OF_CLASSES = 6
-NUMBER_OF_FEATURES = NUMBER_OF_CLASSES*2
-NUMBER_OF_FEATURES_PER_CLASS = 500
+from time import time
 
-FEATURE_MEAN_RANGE = [0, 10]
+from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
+                        NUMBER_OF_FEATURES_PER_CLASS,
+                        FEATURE_MEAN_RANGE, NUMBER_OF_FEATURES_TO_PRUNE,
+                        TEST_SIZE_PERCENTAGE)
 
 RANDOM_NUMBER_SEEDS = range(0,20)
-NUMBER_OF_FEATURES_TO_PRUNE = int(NUMBER_OF_FEATURES / 2)
+
 NUMBER_OF_NON_NOISY_FEATURES = NUMBER_OF_FEATURES - NUMBER_OF_FEATURES_TO_PRUNE
 
-TEST_SIZE_PERCENTAGE = 0.2
 
 NUMBER_OF_FEATURES_TO_SELECT_RANGE = range(1, NUMBER_OF_FEATURES)
 
@@ -46,7 +46,6 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
 
     X_train, X_test, y_train, y_test = train_test_split(trainData, labels,
                                                         test_size=TEST_SIZE_PERCENTAGE)
-
 
     n_neighbors = 5
 
@@ -75,26 +74,34 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
 
 class AccuracyData:
 
-    def __init__(self, meanTrain, stdTrain, meanTest, stdTest):
+    def __init__(self, meanTrain, stdTrain, meanTest, stdTest, meanTime):
         self.meanTrain = meanTrain
         self.stdTrain = stdTrain
         self.meanTest = meanTest
         self.stdTest = stdTest
+        self.meanTime = meanTime
 
 meanTrainAccuracies = []
 meanTestAccuracies = []
 stdTrainAccuracies = []
 stdTestAccuracies = []
 
+meanTimes = []
+
 for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
 
     trainAccuracies = []
     testAccuracies = []
-    for seed in RANDOM_NUMBER_SEEDS:
-        trainAccuracy, testAccuracy = runWrappingAndGetAccuracies(seed, nFeatures)
 
+    durations = []
+
+    for seed in RANDOM_NUMBER_SEEDS:
+        a = time()
+        trainAccuracy, testAccuracy = runWrappingAndGetAccuracies(seed, nFeatures)
+        b = time()
         trainAccuracies.append(trainAccuracy)
         testAccuracies.append(testAccuracy)
+        durations.append(b-a)
 
     meanTrainAccuracy = np.mean(trainAccuracies)
     stdTrainAccuracy = np.std(trainAccuracies)
@@ -102,10 +109,15 @@ for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
     meanTestAccuracy = np.mean(testAccuracies)
     stdTestAccuracy = np.std(testAccuracies)
 
+    meanTime = np.mean(durations)
+
     meanTrainAccuracies.append(meanTrainAccuracy)
     meanTestAccuracies.append(meanTestAccuracy)
     stdTrainAccuracies.append(stdTrainAccuracy)
     stdTestAccuracies.append(stdTestAccuracy)
+    meanTimes.append(meanTime)
+
+meanDuration = np.mean(meanTimes)
 
 plt.figure()
 #plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
@@ -115,12 +127,15 @@ plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTestAccuracies,
              yerr=stdTestAccuracies, label="Test Set",
              capthick=2, capsize=10)
 plt.title("Number Of Features to Select vs Accuracy\n" +
-          "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
+          "Number Of Non-Noisy Features: {} Time: {:.2f}".format(NUMBER_OF_NON_NOISY_FEATURES,
+                                                             meanDuration))
 plt.xlabel("Number Of Features to Select")
 plt.ylabel("Accuracy")
 plt.legend()
+plt.show()
 
 saveData = AccuracyData(meanTrainAccuracies, stdTrainAccuracies,
-                        meanTestAccuracies, stdTestAccuracies)
+                        meanTestAccuracies, stdTestAccuracies,
+                        meanDuration)
 np.save("BackwardWrappingMeanAndStdData", saveData)
 
