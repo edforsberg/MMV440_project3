@@ -10,14 +10,14 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from DataGenerator import generateData
-from Preprocessing import deleteFeaturesRandomly
+from Preprocessing import transfromFeaturesToNoiseRandomly
 
 NUMBER_OF_CLASSES = 4
 NUMBER_OF_FEATURES = NUMBER_OF_CLASSES*2
 NUMBER_OF_FEATURES_PER_CLASS = 300
 TOTAL_NUMBER_OF_RECORDS = NUMBER_OF_CLASSES * NUMBER_OF_FEATURES_PER_CLASS
 
-FEATURE_MEAN_RANGE = [0, 50]
+FEATURE_MEAN_RANGE = [0, 10]
 
 RANDOM_NUMBER_SEED = 0
 NUMBER_OF_FEATURES_TO_PRUNE = 3
@@ -26,13 +26,18 @@ OPACITY = 0.7
 
 TEST_SIZE_PERCENTAGE = 0.2
 
+NOISE_MEAN = 10
+NOISE_STD = 5
+
 np.random.seed(RANDOM_NUMBER_SEED)
 
 data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
                             NUMBER_OF_FEATURES_PER_CLASS, FEATURE_MEAN_RANGE,
                             RANDOM_NUMBER_SEED)
-prunedtrainData = deleteFeaturesRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE,
-                                    randomNumberSeed=RANDOM_NUMBER_SEED)
+prunedtrainData = transfromFeaturesToNoiseRandomly(data, labels,
+                                                   NUMBER_OF_FEATURES_TO_PRUNE,
+                                                   NOISE_MEAN, NOISE_STD,
+                                                   randomNumberSeed=RANDOM_NUMBER_SEED)
 
 X_train, X_test, y_train, y_test = train_test_split(prunedtrainData, labels,
                                                     test_size=TEST_SIZE_PERCENTAGE)
@@ -42,12 +47,15 @@ distincttrainLabels = np.unique(labels)
 # PLOT
 
 plt.figure()
-plt.title("Feature Selection With PCA")
-plt.xlabel("PC1")
-plt.ylabel("PC2")
-for label in distincttrainLabels:
+plt.title("Data Set")
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+for i, label in enumerate(distincttrainLabels):
     plt.scatter(X_train[y_train==label,0], X_train[y_train==label,1],
-                c=np.random.rand(3,), alpha=OPACITY)
+                c=np.random.rand(3,), alpha=OPACITY,
+                label="Class {}".format(i))
+
+plt.legend()
 
 pca = PCA()
 pcaTrainData = pca.fit_transform(X_train)
@@ -56,6 +64,9 @@ plt.figure()
 plt.title("Feature Selection With PCA")
 plt.xlabel("PC1")
 plt.ylabel("PC2")
-for label in distincttrainLabels:
+for i, label in enumerate(distincttrainLabels):
     plt.scatter(pcaTrainData[y_train==label,0], pcaTrainData[y_train==label,1],
-                c=np.random.rand(3,), alpha=OPACITY)
+                c=np.random.rand(3,), alpha=OPACITY,
+                label="Class {}".format(i))
+
+plt.legend()
