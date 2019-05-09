@@ -19,8 +19,10 @@ TOTAL_NUMBER_OF_RECORDS = NUMBER_OF_CLASSES * NUMBER_OF_FEATURES_PER_CLASS
 
 FEATURE_MEAN_RANGE = [0, 50]
 
-RANDOM_NUMBER_SEED = 2
+RANDOM_NUMBER_SEED = 0
 NUMBER_OF_FEATURES_TO_PRUNE = 3
+
+OPACITY = 0.7
 
 TEST_SIZE_PERCENTAGE = 0.2
 
@@ -45,7 +47,7 @@ plt.xlabel("PC1")
 plt.ylabel("PC2")
 for label in distincttrainLabels:
     plt.scatter(X_train[y_train==label,0], X_train[y_train==label,1],
-                c=np.random.rand(3,))
+                c=np.random.rand(3,), alpha=OPACITY)
 
 pca = PCA()
 pcaTrainData = pca.fit_transform(X_train)
@@ -56,4 +58,4 @@ plt.xlabel("PC1")
 plt.ylabel("PC2")
 for label in distincttrainLabels:
     plt.scatter(pcaTrainData[y_train==label,0], pcaTrainData[y_train==label,1],
-                c=np.random.rand(3,))
+                c=np.random.rand(3,), alpha=OPACITY)
