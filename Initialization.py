@@ -42,12 +42,12 @@ def initializeFeatureCov(numberOfClasses, numberOfFeatures, randomNumberSeed=Non
     for i in range(numberOfClasses):
         initialCov = np.random.rand(numberOfFeatures, numberOfFeatures)
 
-        # Make positive semi-definite
-        initialCov = np.dot(initialCov,initialCov.transpose())
-        #Make diag 1
-        np.fill_diagonal(initialCov, 1)
         #Make symmetric
         symmetricCov = np.maximum(initialCov, initialCov.transpose())
+        #Make diag 1
+        np.fill_diagonal(symmetricCov, 1)
+        # Make positive semi-definite
+        initialCov = np.dot(symmetricCov,symmetricCov.transpose())
 
         featureCovarianceOfEachClass[i] = symmetricCov
     return featureCovarianceOfEachClass
