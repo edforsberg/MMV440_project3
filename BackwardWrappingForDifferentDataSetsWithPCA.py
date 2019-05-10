@@ -96,7 +96,6 @@ for nFeatures in NUMBER_OF_FEATURES_TO_REMOVE_RANGE:
         testAccuracies.append(testAccuracy)
         durations.append(b-a)
 
-
     meanTestAccuracy = np.mean(testAccuracies)
     stdTestAccuracy = np.std(testAccuracies)
 
