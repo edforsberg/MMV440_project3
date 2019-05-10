@@ -55,8 +55,7 @@ NUMBER_OF_NON_NOISY_FEATURES = NUMBER_OF_FEATURES - NUMBER_OF_FEATURES_TO_PRUNE
 
 NUMBER_OF_FEATURES_TO_SELECT_RANGE = range(1, NUMBER_OF_FEATURES)
 
-
-def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
+def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToSelect):
     np.random.seed(randomNumberSeed)
 
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
@@ -67,6 +66,9 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
                                      NUMBER_OF_FEATURES_TO_PRUNE,
                                      NOISE_MEAN, NOISE_STD,
                                      randomNumberSeed=randomNumberSeed)
+
+    pca = PCA()
+    trainData = pca.fit_transform(trainData)
 
     X_train, X_test, y_train, y_test = train_test_split(trainData, labels,
                                                         test_size=TEST_SIZE_PERCENTAGE)
@@ -119,7 +121,7 @@ for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
 
     for seed in RANDOM_NUMBER_SEEDS:
         a = time()
-        trainAccuracy, testAccuracy = runWrappingAndGetAccuracies(seed, nFeatures)
+        trainAccuracy, testAccuracy = runWrappingAndGetAccuraciesWithPCA(seed, nFeatures)
         b = time()
         trainAccuracies.append(trainAccuracy)
         testAccuracies.append(testAccuracy)
