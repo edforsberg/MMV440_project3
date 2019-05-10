@@ -13,7 +13,7 @@ from DataGenerator import generateData
 from Preprocessing import transfromFeaturesToNoiseRandomly
 
 from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                        NUMBER_OF_FEATURES_PER_CLASS,
+                        NUMBER_OF_RECORDS_PER_CLASS,
                         FEATURE_MEAN_RANGE, RANDOM_NUMBER_SEED,
                         NUMBER_OF_FEATURES_TO_PRUNE, TEST_SIZE_PERCENTAGE,
                         NOISE_MEAN, NOISE_STD)
@@ -23,7 +23,7 @@ OPACITY = 0.7
 np.random.seed(RANDOM_NUMBER_SEED)
 
 data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                            NUMBER_OF_FEATURES_PER_CLASS, FEATURE_MEAN_RANGE,
+                            NUMBER_OF_RECORDS_PER_CLASS, FEATURE_MEAN_RANGE,
                             RANDOM_NUMBER_SEED)
 prunedtrainData = transfromFeaturesToNoiseRandomly(data, labels,
                                                    NUMBER_OF_FEATURES_TO_PRUNE,

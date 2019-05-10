@@ -5,34 +5,6 @@ from sklearn.feature_selection import VarianceThreshold
 from DataGenerator import generateData
 from Preprocessing import deleteFeaturesRandomly
 
-constantFilterThreshold = 10
-correlationFilterThreshold = 1
-numberOfFeaturesToRemove = 2
-
-NUMBER_OF_CLASSES = 6
-NUMBER_OF_FEATURES = NUMBER_OF_CLASSES * 2
-NUMBER_OF_FEATURES_PER_CLASS = 500
-TOTAL_NUMBER_OF_RECORDS = NUMBER_OF_CLASSES * NUMBER_OF_FEATURES_PER_CLASS
-
-FEATURE_MEAN_RANGE = [0, 10]
-
-RANDOM_NUMBER_SEED = 2
-NUMBER_OF_FEATURES_TO_PRUNE = 4
-
-TEST_SIZE_PERCENTAGE = 0.2
-
-np.random.seed(RANDOM_NUMBER_SEED)
-
-
-data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                            NUMBER_OF_FEATURES_PER_CLASS, FEATURE_MEAN_RANGE,
-                            RANDOM_NUMBER_SEED)
-
-prunedTrainData = deleteFeaturesRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE,
-                                         randomNumberSeed=RANDOM_NUMBER_SEED)
-
-X_train, X_test, y_train, y_test = train_test_split(prunedTrainData, labels,
-                                                    test_size=TEST_SIZE_PERCENTAGE)
 
 def constantFilter(X_train, constantFilterThreshold):
     constantFilter = VarianceThreshold(threshold=constantFilterThreshold)
@@ -49,6 +21,9 @@ def correlationFilter(X_train, correlationFilterThreshold):
     return X_train
 
 def fisherScoreFilter(numberOfFeaturesToRemove, X_train, y_train, NUMBER_OF_CLASSES):
+    if numberOfFeaturesToRemove == 0:
+        return X_train, [], [] 
+    
     numberOfFeatures = np.size(X_train, 1)
     classSizes = np.zeros(NUMBER_OF_CLASSES)
     for i in range(NUMBER_OF_CLASSES):
@@ -82,13 +57,6 @@ def fisherScoreFilter(numberOfFeaturesToRemove, X_train, y_train, NUMBER_OF_CLAS
         fisherScores[i] = np.divide(numerator, denominator)
 
     indexes = np.argpartition(fisherScores, numberOfFeaturesToRemove)
-    featuresToRemove = indexes[0:numberOfFeaturesToRemove]
-    X_train = np.delete(X_train, np.s_[featuresToRemove], axis=1) 
-    return X_train, fisherScores
-
-
-
-
-
-
-
+    removedFeatures = indexes[0:numberOfFeaturesToRemove]
+    X_train = np.delete(X_train, np.s_[removedFeatures], axis=1) 
+    return X_train, fisherScores, removedFeatures
