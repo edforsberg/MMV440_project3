@@ -44,7 +44,7 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
 
     feature_selector = SequentialFeatureSelector(KNeighborsClassifier(n_neighbors),
                k_features=nFeaturesToSelect,
-               forward=False,
+               forward=True,
                verbose=0,
                cv=5,
                n_jobs=-1)
