@@ -69,9 +69,7 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToRemove):
 
 class AccuracyData:
 
-    def __init__(self, meanTrain, stdTrain, meanTest, stdTest, meanTime=None):
-        self.meanTrain = meanTrain
-        self.stdTrain = stdTrain
+    def __init__(self, meanTest, stdTest, meanTime=None):
         self.meanTest = meanTest
         self.stdTest = stdTest
         self.meanTime = meanTime
@@ -116,7 +114,6 @@ plt.ylabel("Accuracy")
 plt.legend()
 plt.show()
 
-saveData = AccuracyData(meanTrainAccuracies, stdTrainAccuracies,
-                        meanTestAccuracies, stdTestAccuracies)
+saveData = AccuracyData(meanTestAccuracies, stdTestAccuracies)
 np.save("BackwardWrappingMeanAndStdData", saveData)
 
