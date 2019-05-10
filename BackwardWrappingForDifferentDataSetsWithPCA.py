@@ -18,25 +18,21 @@ from Preprocessing import transfromFeaturesToNoiseRandomly
 from time import time
 
 from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                        NUMBER_OF_FEATURES_PER_CLASS,
+                        NUMBER_OF_RECORS_PER_CLASS,
                         FEATURE_MEAN_RANGE, NUMBER_OF_FEATURES_TO_PRUNE,
+                        NOISE_MEAN, NOISE_STD,
                         TEST_SIZE_PERCENTAGE)
-
 
 RANDOM_NUMBER_SEEDS = range(0,20)
 NUMBER_OF_NON_NOISY_FEATURES = NUMBER_OF_FEATURES - NUMBER_OF_FEATURES_TO_PRUNE
-
 
 NUMBER_OF_FEATURES_TO_SELECT_RANGE = range(1, NUMBER_OF_FEATURES)
 
 def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToSelect):
     np.random.seed(randomNumberSeed)
 
-    NOISE_MEAN = np.random.rand() * FEATURE_MEAN_RANGE[1] - FEATURE_MEAN_RANGE[0]
-    NOISE_STD = np.random.rand() * FEATURE_MEAN_RANGE[1] - FEATURE_MEAN_RANGE[0]
-
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                                NUMBER_OF_FEATURES_PER_CLASS, FEATURE_MEAN_RANGE,
+                                NUMBER_OF_RECORS_PER_CLASS, FEATURE_MEAN_RANGE,
                                 randomNumberSeed)
 
     trainData = transfromFeaturesToNoiseRandomly(data, labels,
@@ -49,7 +45,6 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToSelect):
 
     X_train, X_test, y_train, y_test = train_test_split(trainData, labels,
                                                         test_size=TEST_SIZE_PERCENTAGE)
-
 
     n_neighbors = 5
 
@@ -117,9 +112,9 @@ for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
     meanTestAccuracies.append(meanTestAccuracy)
     stdTrainAccuracies.append(stdTrainAccuracy)
     stdTestAccuracies.append(stdTestAccuracy)
-    meanTime.append(meanTime)
+    durations.append(meanTime)
 
-meanDuration = np.mean(meanTime)
+meanDuration = np.mean(durations)
 
 plt.figure()
 #plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
@@ -129,8 +124,7 @@ plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTestAccuracies,
              yerr=stdTestAccuracies, label="Test Set",
              capthick=2, capsize=10)
 plt.title("Number Of Features to Select vs Accuracy With PCA\n" +
-          "Number Of Non-Noisy Features: {} Duration: {:.2f} seconds".format(NUMBER_OF_NON_NOISY_FEATURES,
-                                                                         meanDuration))
+          "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
 plt.xlabel("Number Of Features to Select")
 plt.ylabel("Accuracy")
 plt.legend()

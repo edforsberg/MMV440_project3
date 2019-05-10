@@ -18,8 +18,9 @@ from Preprocessing import transfromFeaturesToNoiseRandomly
 from time import time
 
 from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                        NUMBER_OF_FEATURES_PER_CLASS,
+                        NUMBER_OF_RECORS_PER_CLASS,
                         FEATURE_MEAN_RANGE, NUMBER_OF_FEATURES_TO_PRUNE,
+                        NOISE_MEAN, NOISE_STD,
                         TEST_SIZE_PERCENTAGE)
 
 RANDOM_NUMBER_SEEDS = range(0,20)
@@ -32,11 +33,8 @@ NUMBER_OF_FEATURES_TO_SELECT_RANGE = range(1, NUMBER_OF_FEATURES)
 def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
     np.random.seed(randomNumberSeed)
 
-    NOISE_MEAN = np.random.rand() * FEATURE_MEAN_RANGE[1] - FEATURE_MEAN_RANGE[0]
-    NOISE_STD = np.random.rand() * FEATURE_MEAN_RANGE[1] - FEATURE_MEAN_RANGE[0]
-
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                                NUMBER_OF_FEATURES_PER_CLASS, FEATURE_MEAN_RANGE,
+                                NUMBER_OF_RECORS_PER_CLASS, FEATURE_MEAN_RANGE,
                                 randomNumberSeed)
 
     trainData = transfromFeaturesToNoiseRandomly(data, labels,
@@ -127,8 +125,7 @@ plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTestAccuracies,
              yerr=stdTestAccuracies, label="Test Set",
              capthick=2, capsize=10)
 plt.title("Number Of Features to Select vs Accuracy\n" +
-          "Number Of Non-Noisy Features: {} Time: {:.2f}".format(NUMBER_OF_NON_NOISY_FEATURES,
-                                                             meanDuration))
+          "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
 plt.xlabel("Number Of Features to Select")
 plt.ylabel("Accuracy")
 plt.legend()
