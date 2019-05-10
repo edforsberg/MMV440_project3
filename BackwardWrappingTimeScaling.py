@@ -15,7 +15,7 @@ from DataGenerator import generateData
 from Preprocessing import transfromFeaturesToNoiseRandomly
 from time import time
 
-from settings import (NUMBER_OF_CLASSES, NUMBER_OF_RECORS_PER_CLASS,
+from settings import (NUMBER_OF_CLASSES, NUMBER_OF_RECORDS_PER_CLASS,
                         FEATURE_MEAN_RANGE, NUMBER_OF_FEATURES_TO_PRUNE,
                         NOISE_MEAN, NOISE_STD,
                         TEST_SIZE_PERCENTAGE)
@@ -27,7 +27,7 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeatures, nFeaturesToS
     np.random.seed(randomNumberSeed)
 
     data, labels = generateData(NUMBER_OF_CLASSES, nFeatures,
-                                NUMBER_OF_RECORS_PER_CLASS, FEATURE_MEAN_RANGE,
+                                NUMBER_OF_RECORDS_PER_CLASS, FEATURE_MEAN_RANGE,
                                 randomNumberSeed)
 
     trainData = transfromFeaturesToNoiseRandomly(data, labels,
@@ -39,7 +39,6 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeatures, nFeaturesToS
                                                         test_size=TEST_SIZE_PERCENTAGE)
 
     n_neighbors = 5
-
     a = time()
     _ = SequentialFeatureSelector(KNeighborsClassifier(n_neighbors),
                k_features=nFeaturesToSelect,
