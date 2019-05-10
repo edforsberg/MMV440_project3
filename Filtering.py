@@ -5,20 +5,20 @@ from sklearn.feature_selection import VarianceThreshold
 from DataGenerator import generateData
 from Preprocessing import deleteFeaturesRandomly
 
-from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES, NUMBER_OF_RECORDS_PER_CLASS,
-                      FEATURE_MEAN_RANGE, RANDOM_NUMBER_SEED, NUMBER_OF_FEATURES_TO_PRUNE, 
-                      TEST_SIZE_PERCENTAGE, NOISE_MEAN, NOISE_STD, constantFilterThreshold,
-                      correlationFilterThreshold, numberOfFeaturesToRemove)
-
-data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                            NUMBER_OF_RECORDS_PER_CLASS, FEATURE_MEAN_RANGE,
-                            RANDOM_NUMBER_SEED)
-
-prunedTrainData = deleteFeaturesRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE,
-                                         randomNumberSeed=RANDOM_NUMBER_SEED)
-
-X_train, X_test, y_train, y_test = train_test_split(prunedTrainData, labels,
-                                                    test_size=TEST_SIZE_PERCENTAGE)
+#from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES, NUMBER_OF_RECORDS_PER_CLASS,
+#                      FEATURE_MEAN_RANGE, RANDOM_NUMBER_SEED, NUMBER_OF_FEATURES_TO_PRUNE, 
+#                      TEST_SIZE_PERCENTAGE, NOISE_MEAN, NOISE_STD, constantFilterThreshold,
+#                      correlationFilterThreshold, numberOfFeaturesToRemove)
+#
+#data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
+#                            NUMBER_OF_RECORDS_PER_CLASS, FEATURE_MEAN_RANGE,
+#                            RANDOM_NUMBER_SEED)
+#
+#prunedTrainData = deleteFeaturesRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE,
+#                                         randomNumberSeed=RANDOM_NUMBER_SEED)
+#
+#X_train, X_test, y_train, y_test = train_test_split(prunedTrainData, labels,
+#                                                    test_size=TEST_SIZE_PERCENTAGE)
 
 def constantFilter(X_train, constantFilterThreshold):
     constantFilter = VarianceThreshold(threshold=constantFilterThreshold)
@@ -71,10 +71,3 @@ def fisherScoreFilter(numberOfFeaturesToRemove, X_train, y_train, NUMBER_OF_CLAS
     removedFeatures = indexes[0:numberOfFeaturesToRemove]
     X_train = np.delete(X_train, np.s_[removedFeatures], axis=1) 
     return X_train, fisherScores, removedFeatures
-
-
-
-
-
-
-
