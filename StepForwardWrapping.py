@@ -8,8 +8,10 @@ Created on Wed May  8 15:10:49 2019
 import numpy as np
 from mlxtend.feature_selection import SequentialFeatureSelector
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.decomposition import PCA
 
 def StepForwardWrapping(data, labels, nrFeatures, k = 5): 
+    
     nrClasses = len(set(labels))
     nrDataPts, nrFeaturesOriginal = data.shape
    # nrDataPoints = data.shape[0]
@@ -23,4 +25,7 @@ def StepForwardWrapping(data, labels, nrFeatures, k = 5):
 
     features = feature_selector.fit(data, labels)
     return features 
+
+def StepForwardWrappingPCA(data, labels, nrFeatures, k = 5):
+    pca = PCA()
         
