@@ -7,7 +7,7 @@ Created on Thu May  9 19:22:57 2019
 
 NUMBER_OF_CLASSES = 6
 NUMBER_OF_FEATURES = NUMBER_OF_CLASSES*2
-NUMBER_OF_RECORS_PER_CLASS = 500
+NUMBER_OF_RECORDS_PER_CLASS = 500
 
 FEATURE_MEAN_RANGE = [0, 10]
 
@@ -18,3 +18,7 @@ TEST_SIZE_PERCENTAGE = 0.2
 
 NOISE_MEAN = 10
 NOISE_STD = 5
+
+constantFilterThreshold = 10 
+correlationFilterThreshold = 1
+numberOfFeaturesToRemove = 2
