@@ -6,17 +6,21 @@ Created on Wed May  8 15:10:49 2019
 """
 
 import numpy as np
-import sklearn.neighbors as sk
+from mlxtend.feature_selection import SequentialFeatureSelector
+from sklearn.neighbors import KNeighborsClassifier
 
 def StepForwardWrapping(data, labels, nrFeatures, k = 5): 
     nrClasses = len(set(labels))
     nrDataPts, nrFeaturesOriginal = data.shape
    # nrDataPoints = data.shape[0]
     features = []
-    for i in range(nrFeatures):
-        for j in range(nrFeaturesOriginal):
-            sk.KNeighborsClassifier(n_neighbours = k).fit(data,labels)
-            
+    feature_selector = SequentialFeatureSelector(KNeighborsClassifier(5),
+               k_features=k,
+               forward=True,
+               verbose=0,
+               cv=5,
+               n_jobs=-1)
 
-            return data
+    features = feature_selector.fit(data, labels)
+    return features 
         
