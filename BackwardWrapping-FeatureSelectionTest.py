@@ -16,7 +16,7 @@ from DataGenerator import generateData
 from Preprocessing import transfromFeaturesToNoiseRandomly
 
 from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                        NUMBER_OF_RECORS_PER_CLASS,
+                        NUMBER_OF_RECORDS_PER_CLASS,
                         FEATURE_MEAN_RANGE, NUMBER_OF_FEATURES_TO_PRUNE,
                         NOISE_MEAN, NOISE_STD,
                         TEST_SIZE_PERCENTAGE)
@@ -29,7 +29,7 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
     np.random.seed(randomNumberSeed)
 
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                                NUMBER_OF_RECORS_PER_CLASS, FEATURE_MEAN_RANGE,
+                                NUMBER_OF_RECORDS_PER_CLASS, FEATURE_MEAN_RANGE,
                                 randomNumberSeed)
 
     trainData = transfromFeaturesToNoiseRandomly(data, labels,

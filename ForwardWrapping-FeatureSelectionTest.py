@@ -21,13 +21,11 @@ from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
                         NOISE_MEAN, NOISE_STD,
                         TEST_SIZE_PERCENTAGE)
 
+NUMBER_OF_FEATURES_TO_SELECT = 3
 RANDOM_NUMBER_SEEDS = range(0,20)
 
-NUMBER_OF_NON_NOISY_FEATURES = NUMBER_OF_FEATURES - NUMBER_OF_FEATURES_TO_PRUNE
 
-NUMBER_OF_FEATURES_TO_REMOVE_RANGE = range(0, NUMBER_OF_FEATURES-1)
-
-def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToRemove):
+def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
     np.random.seed(randomNumberSeed)
 
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
@@ -43,18 +41,19 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToRemove):
                                                         test_size=TEST_SIZE_PERCENTAGE)
 
     n_neighbors = 5
-    nFeaturesToSelect = NUMBER_OF_FEATURES - nFeaturesToRemove
+
     feature_selector = SequentialFeatureSelector(KNeighborsClassifier(n_neighbors),
                k_features=nFeaturesToSelect,
-               forward=False,
+               forward=True,
                verbose=0,
                cv=5,
                n_jobs=-1)
 
     features = feature_selector.fit(X_train, y_train)
+    selectedFeatureSubset = features.k_feature_idx_
 
-    xTrainWithSelectedFeatures = X_train[:, features.k_feature_idx_]
-    xTestWithSelectedFeatures = X_test[:, features.k_feature_idx_]
+    xTrainWithSelectedFeatures = X_train[:, selectedFeatureSubset]
+    xTestWithSelectedFeatures = X_test[:, selectedFeatureSubset]
 
     knn = KNeighborsClassifier(n_neighbors)
     knn.fit(xTrainWithSelectedFeatures, y_train)
@@ -65,55 +64,23 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToRemove):
     test_pred = knn.predict(xTestWithSelectedFeatures)
     accuracyTest = accuracy_score(y_test, test_pred)
 
-    return (accuracyTrain, accuracyTest)
+    return (accuracyTrain, accuracyTest, selectedFeatureSubset)
 
-class AccuracyData:
+trainAccuracies = []
+testAccuracies = []
+selectedFeatureSubsets = []
 
-    def __init__(self, meanTest, stdTest, meanTime=None):
-        self.meanTest = meanTest
-        self.stdTest = stdTest
-        self.meanTime = meanTime
+for seed in RANDOM_NUMBER_SEEDS:
+    trainAccuracy, testAccuracy, selectedFeatureSubset = runWrappingAndGetAccuracies(seed,
+                                                                                     NUMBER_OF_FEATURES_TO_SELECT)
+    trainAccuracies.append(trainAccuracy)
+    testAccuracies.append(testAccuracy)
+    selectedFeatureSubsets.append(selectedFeatureSubset)
 
-meanTrainAccuracies = []
-meanTestAccuracies = []
-stdTrainAccuracies = []
-stdTestAccuracies = []
+for i in range(len(testAccuracies)):
+    print("Selected Feature Subset: {}\tTest Accuracy: {:.2f}".format(selectedFeatureSubsets[i],
+                                                                  testAccuracies[i]))
 
-meanTimes = []
 
-for nFeatures in NUMBER_OF_FEATURES_TO_REMOVE_RANGE:
 
-    trainAccuracies = []
-    testAccuracies = []
-
-    durations = []
-
-    for seed in RANDOM_NUMBER_SEEDS:
-        trainAccuracy, testAccuracy = runWrappingAndGetAccuracies(seed, nFeatures)
-        trainAccuracies.append(trainAccuracy)
-        testAccuracies.append(testAccuracy)
-
-    meanTrainAccuracy = np.mean(trainAccuracies)
-    stdTrainAccuracy = np.std(trainAccuracies)
-    meanTestAccuracy = np.mean(testAccuracies)
-    stdTestAccuracy = np.std(testAccuracies)
-
-    meanTrainAccuracies.append(meanTrainAccuracy)
-    meanTestAccuracies.append(meanTestAccuracy)
-    stdTrainAccuracies.append(stdTrainAccuracy)
-    stdTestAccuracies.append(stdTestAccuracy)
-
-plt.figure()
-plt.errorbar(NUMBER_OF_FEATURES_TO_REMOVE_RANGE, meanTestAccuracies,
-             yerr=stdTestAccuracies, label="Test Set",
-             capthick=2, capsize=10)
-plt.title("Number Of Features Removed vs Accuracy\n" +
-          "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
-plt.xlabel("Number Of Features Removed")
-plt.ylabel("Accuracy")
-plt.legend()
-plt.show()
-
-saveData = AccuracyData(meanTestAccuracies, stdTestAccuracies)
-np.save("BackwardWrappingMeanAndStdData", saveData)
 
