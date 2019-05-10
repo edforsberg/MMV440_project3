@@ -31,7 +31,6 @@ y_pred = classifier.predict(X_test)
 accuracy[0] = accuracy_score(y_test, y_pred)
 
 for i in range(1, maxNumberOfFeaturesToRemove+1):
-    print(i)
     X_train_i, fisherScores, removedFeatures = fisherScoreFilter(i, X_train, y_train, NUMBER_OF_CLASSES)
 
     classifier = KNeighborsClassifier(n_neighbors=5)  
@@ -48,5 +47,6 @@ plt.xlabel('Number of features removed')
 plt.ylabel('Accuracy')
 plt.grid()
 plt.show()
+
 #print(confusion_matrix(y_test, y_pred))  
 #print(classification_report(y_test, y_pred))  
