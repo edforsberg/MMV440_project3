@@ -24,7 +24,6 @@ from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
 NUMBER_OF_FEATURES_TO_SELECT = 3
 RANDOM_NUMBER_SEEDS = range(0,20)
 
-
 def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
     np.random.seed(randomNumberSeed)
 

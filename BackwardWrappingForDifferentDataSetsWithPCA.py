@@ -18,7 +18,7 @@ from Preprocessing import transfromFeaturesToNoiseRandomly
 from time import time
 
 from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                        NUMBER_OF_RECORS_PER_CLASS,
+                        NUMBER_OF_RECORDS_PER_CLASS,
                         FEATURE_MEAN_RANGE, NUMBER_OF_FEATURES_TO_PRUNE,
                         NOISE_MEAN, NOISE_STD,
                         TEST_SIZE_PERCENTAGE)
@@ -32,7 +32,7 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToRemove):
     np.random.seed(randomNumberSeed)
 
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
-                                NUMBER_OF_RECORS_PER_CLASS, FEATURE_MEAN_RANGE,
+                                NUMBER_OF_RECORDS_PER_CLASS, FEATURE_MEAN_RANGE,
                                 randomNumberSeed)
 
     trainData = transfromFeaturesToNoiseRandomly(data, labels,
@@ -78,9 +78,7 @@ class AccuracyData:
         self.stdTest = stdTest
         self.meanTime = meanTime
 
-meanTrainAccuracies = []
 meanTestAccuracies = []
-stdTrainAccuracies = []
 stdTestAccuracies = []
 
 for nFeatures in NUMBER_OF_FEATURES_TO_REMOVE_RANGE:
@@ -98,19 +96,12 @@ for nFeatures in NUMBER_OF_FEATURES_TO_REMOVE_RANGE:
         testAccuracies.append(testAccuracy)
         durations.append(b-a)
 
-    meanTrainAccuracy = np.mean(trainAccuracies)
-    stdTrainAccuracy = np.std(trainAccuracies)
 
     meanTestAccuracy = np.mean(testAccuracies)
     stdTestAccuracy = np.std(testAccuracies)
 
-    meanTime = np.mean(durations)
-
-    meanTrainAccuracies.append(meanTrainAccuracy)
     meanTestAccuracies.append(meanTestAccuracy)
-    stdTrainAccuracies.append(stdTrainAccuracy)
     stdTestAccuracies.append(stdTestAccuracy)
-    durations.append(meanTime)
 
 meanDuration = np.mean(durations)
 
