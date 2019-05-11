@@ -49,19 +49,12 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeatures, nFeaturesToS
     b = time()
     return (b-a)*1000
 
-class TimeData:
-
-    def __init__(self, meanTime, stdTime):
-        self.meanTime = meanTime
-        self.stdTime = stdTime
-
 meanDurations = []
 stdDurations = []
 
 for nFeatures in NUMBER_OF_FEATURES:
 
     nFeaturesToSelect = int(nFeatures/2)
-
     durations = []
 
     for seed in RANDOM_NUMBER_SEEDS:
@@ -75,8 +68,8 @@ for nFeatures in NUMBER_OF_FEATURES:
     meanDurations.append(meanTime)
     stdDurations.append(stdTime)
 
-
 plt.figure(figsize=(8,8))
+plt.ylim([0,1])
 plt.errorbar(NUMBER_OF_FEATURES, meanDurations,
              yerr=stdDurations, label="Mean Duration",
              capthick=2, capsize=10)
@@ -85,7 +78,4 @@ plt.xlabel("Number Of Dimenions in Data Set")
 plt.ylabel("Duration (Milliseconds)")
 plt.legend()
 plt.show()
-
-saveData = TimeData(meanDurations, stdDurations)
-np.save("BackwardWrappingTimeData", saveData)
 
