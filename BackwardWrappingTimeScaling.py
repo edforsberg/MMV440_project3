@@ -15,7 +15,7 @@ from DataGenerator import generateData
 from Preprocessing import transfromFeaturesToNoiseRandomly
 from time import time
 
-from settings import (NUMBER_OF_CLASSES, NUMBER_OF_RECORS_PER_CLASS,
+from settings import (NUMBER_OF_CLASSES, NUMBER_OF_RECORDS_PER_CLASS,
                         FEATURE_MEAN_RANGE, NUMBER_OF_FEATURES_TO_PRUNE,
                         NOISE_MEAN, NOISE_STD,
                         TEST_SIZE_PERCENTAGE)
@@ -27,7 +27,7 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeatures, nFeaturesToS
     np.random.seed(randomNumberSeed)
 
     data, labels = generateData(NUMBER_OF_CLASSES, nFeatures,
-                                NUMBER_OF_RECORS_PER_CLASS, FEATURE_MEAN_RANGE,
+                                NUMBER_OF_RECORDS_PER_CLASS, FEATURE_MEAN_RANGE,
                                 randomNumberSeed)
 
     trainData = transfromFeaturesToNoiseRandomly(data, labels,
@@ -39,7 +39,6 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeatures, nFeaturesToS
                                                         test_size=TEST_SIZE_PERCENTAGE)
 
     n_neighbors = 5
-
     a = time()
     _ = SequentialFeatureSelector(KNeighborsClassifier(n_neighbors),
                k_features=nFeaturesToSelect,
@@ -50,19 +49,12 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeatures, nFeaturesToS
     b = time()
     return (b-a)*1000
 
-class TimeData:
-
-    def __init__(self, meanTime, stdTime):
-        self.meanTime = meanTime
-        self.stdTime = stdTime
-
 meanDurations = []
 stdDurations = []
 
 for nFeatures in NUMBER_OF_FEATURES:
 
     nFeaturesToSelect = int(nFeatures/2)
-
     durations = []
 
     for seed in RANDOM_NUMBER_SEEDS:
@@ -76,8 +68,8 @@ for nFeatures in NUMBER_OF_FEATURES:
     meanDurations.append(meanTime)
     stdDurations.append(stdTime)
 
-
 plt.figure(figsize=(8,8))
+plt.ylim([0,1])
 plt.errorbar(NUMBER_OF_FEATURES, meanDurations,
              yerr=stdDurations, label="Mean Duration",
              capthick=2, capsize=10)
@@ -86,7 +78,4 @@ plt.xlabel("Number Of Dimenions in Data Set")
 plt.ylabel("Duration (Milliseconds)")
 plt.legend()
 plt.show()
-
-saveData = TimeData(meanDurations, stdDurations)
-np.save("BackwardWrappingTimeData", saveData)
 

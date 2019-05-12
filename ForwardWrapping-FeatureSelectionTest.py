@@ -24,6 +24,7 @@ from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
 NUMBER_OF_FEATURES_TO_SELECT = 3
 RANDOM_NUMBER_SEEDS = range(0,20)
 
+
 def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
     np.random.seed(randomNumberSeed)
 
@@ -43,7 +44,7 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
 
     feature_selector = SequentialFeatureSelector(KNeighborsClassifier(n_neighbors),
                k_features=nFeaturesToSelect,
-               forward=False,
+               forward=True,
                verbose=0,
                cv=5,
                n_jobs=-1)

@@ -53,10 +53,9 @@ from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
 RANDOM_NUMBER_SEEDS = range(0,20)
 NUMBER_OF_NON_NOISY_FEATURES = NUMBER_OF_FEATURES - NUMBER_OF_FEATURES_TO_PRUNE
 
-NUMBER_OF_FEATURES_TO_SELECT_RANGE = range(1,NUMBER_OF_FEATURES)
+NUMBER_OF_FEATURES_TO_SELECT_RANGE = range(1, NUMBER_OF_FEATURES)
 
-
-def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
+def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToSelect):
     np.random.seed(randomNumberSeed)
 
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
@@ -67,6 +66,9 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
                                      NUMBER_OF_FEATURES_TO_PRUNE,
                                      NOISE_MEAN, NOISE_STD,
                                      randomNumberSeed=randomNumberSeed)
+
+    pca = PCA()
+    trainData = pca.fit_transform(trainData)
 
     X_train, X_test, y_train, y_test = train_test_split(trainData, labels,
                                                         test_size=TEST_SIZE_PERCENTAGE)
@@ -111,9 +113,6 @@ stdTrainAccuracies = []
 stdTestAccuracies = []
 
 for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
-    
-    if nFeatures == 3:
-        c = 211
 
     trainAccuracies = []
     testAccuracies = []
@@ -122,7 +121,7 @@ for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
 
     for seed in RANDOM_NUMBER_SEEDS:
         a = time()
-        trainAccuracy, testAccuracy = runWrappingAndGetAccuracies(seed, nFeatures)
+        trainAccuracy, testAccuracy = runWrappingAndGetAccuraciesWithPCA(seed, nFeatures)
         b = time()
         trainAccuracies.append(trainAccuracy)
         testAccuracies.append(testAccuracy)
@@ -144,25 +143,16 @@ for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
 
 meanDuration = np.mean(durations)
 
-
-meanTrainAccuracies.reverse()
-stdTrainAccuracies.reverse()
-meanTestAccuracies.reverse()
-stdTestAccuracies.reverse()
-
 plt.figure()
 #plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
 #             yerr=stdTrainAccuracies, label="Training Set",
 #             fmt='_', capthick=2, capsize=10)
 plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTestAccuracies,
-             yerr=stdTestAccuracies, label="Test data",
+             yerr=stdTestAccuracies, label="Test Set",
              capthick=2, capsize=10)
-plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
-             yerr=stdTrainAccuracies, label="Training data",
-             capthick=2, capsize=10)
-plt.title("Number Of Features to remove vs Accuracy" +
+plt.title("Number Of Features to Select vs Accuracy With PCA\n" +
           "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
-plt.xlabel("Number Of Features to remove")
+plt.xlabel("Number Of Features to Select")
 plt.ylabel("Accuracy")
 plt.legend()
 plt.show()
@@ -170,5 +160,5 @@ plt.show()
 saveData = AccuracyData(meanTrainAccuracies, stdTrainAccuracies,
                         meanTestAccuracies, stdTestAccuracies,
                         meanDuration)
-np.save("ForwardWrappingMeanAndStdData", saveData)
+np.save("ForwardWrappingMeanAndStdDataWithPCA", saveData)
         
