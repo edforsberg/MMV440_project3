@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Sun May 12 22:35:11 2019
+
+@author: ErikF
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Wed May  8 15:10:49 2019
 
 @author: ErikF (and Kaan) :)
@@ -53,10 +60,9 @@ from settings import (NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
 RANDOM_NUMBER_SEEDS = range(0,20)
 NUMBER_OF_NON_NOISY_FEATURES = NUMBER_OF_FEATURES - NUMBER_OF_FEATURES_TO_PRUNE
 
-NUMBER_OF_FEATURES_TO_SELECT_RANGE = range(1,NUMBER_OF_FEATURES)
+NUMBER_OF_FEATURES_TO_SELECT_RANGE = range(1, NUMBER_OF_FEATURES)
 
-
-def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
+def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToSelect, times):
     np.random.seed(randomNumberSeed)
 
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
@@ -67,6 +73,9 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
                                      NUMBER_OF_FEATURES_TO_PRUNE,
                                      NOISE_MEAN, NOISE_STD,
                                      randomNumberSeed=randomNumberSeed)
+
+    pca = PCA()
+    trainData = pca.fit_transform(trainData)
 
     X_train, X_test, y_train, y_test = train_test_split(trainData, labels,
                                                         test_size=TEST_SIZE_PERCENTAGE)
@@ -86,6 +95,7 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
     xTestWithSelectedFeatures = X_test[:, features.k_feature_idx_]
 
     knn = KNeighborsClassifier(n_neighbors)
+    a = time()
     knn.fit(xTrainWithSelectedFeatures, y_train)
 
     train_pred = knn.predict(xTrainWithSelectedFeatures)
@@ -93,8 +103,10 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToSelect):
 
     test_pred = knn.predict(xTestWithSelectedFeatures)
     accuracyTest = accuracy_score(y_test, test_pred)
+    b = time()
+    times[nFeaturesToSelect] = times[nFeaturesToSelect]+b-a
 
-    return (accuracyTrain, accuracyTest)
+    return (times)
 
 class AccuracyData:
 
@@ -110,10 +122,8 @@ meanTestAccuracies = []
 stdTrainAccuracies = []
 stdTestAccuracies = []
 
+times = np.zeros(12)
 for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
-    
-    if nFeatures == 3:
-        c = 211
 
     trainAccuracies = []
     testAccuracies = []
@@ -121,46 +131,42 @@ for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
     durations = []
 
     for seed in RANDOM_NUMBER_SEEDS:
-        a = time()
-        trainAccuracy, testAccuracy = runWrappingAndGetAccuracies(seed, nFeatures)
-        b = time()
-        trainAccuracies.append(trainAccuracy)
-        testAccuracies.append(testAccuracy)
-        durations.append(b-a)
-
-    meanTrainAccuracy = np.mean(trainAccuracies)
-    stdTrainAccuracy = np.std(trainAccuracies)
-
-    meanTestAccuracy = np.mean(testAccuracies)
-    stdTestAccuracy = np.std(testAccuracies)
-
-    meanTime = np.mean(durations)
-
-    meanTrainAccuracies.append(meanTrainAccuracy)
-    meanTestAccuracies.append(meanTestAccuracy)
-    stdTrainAccuracies.append(stdTrainAccuracy)
-    stdTestAccuracies.append(stdTestAccuracy)
-    durations.append(meanTime)
-
-meanDuration = np.mean(durations)
-
-
-meanTrainAccuracies.reverse()
-stdTrainAccuracies.reverse()
-meanTestAccuracies.reverse()
-stdTestAccuracies.reverse()
+       # a = time()
+        times = runWrappingAndGetAccuraciesWithPCA(seed, nFeatures, times)
+       # b = time()
+#        trainAccuracies.append(trainAccuracy)
+#        testAccuracies.append(testAccuracy)
+#        durations.append(b-a)
+#
+#    meanTrainAccuracy = np.mean(trainAccuracies)
+#    stdTrainAccuracy = np.std(trainAccuracies)
+#
+#    meanTestAccuracy = np.mean(testAccuracies)
+#    stdTestAccuracy = np.std(testAccuracies)
+#
+#    meanTime = np.mean(durations)
+#
+#    meanTrainAccuracies.append(meanTrainAccuracy)
+#    meanTestAccuracies.append(meanTestAccuracy)
+#    stdTrainAccuracies.append(stdTrainAccuracy)
+#    stdTestAccuracies.append(stdTestAccuracy)
+#    durations.append(meanTime)
+#
+#meanDuration = np.mean(durations)
+#
+#meanTrainAccuracies.reverse()
+#stdTrainAccuracies.reverse()
+#meanTestAccuracies.reverse()
+#stdTestAccuracies.reverse()
 
 plt.figure()
 #plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
 #             yerr=stdTrainAccuracies, label="Training Set",
 #             fmt='_', capthick=2, capsize=10)
-plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTestAccuracies,
+plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, times,
              yerr=stdTestAccuracies, label="Test data",
              capthick=2, capsize=10)
-plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
-             yerr=stdTrainAccuracies, label="Training data",
-             capthick=2, capsize=10)
-plt.title("Number Of Features to remove vs Accuracy" +
+plt.title("Number Of Features to remove vs Accuracy With PCA\n" +
           "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
 plt.xlabel("Number Of Features to remove")
 plt.ylabel("Accuracy")
@@ -170,5 +176,5 @@ plt.show()
 saveData = AccuracyData(meanTrainAccuracies, stdTrainAccuracies,
                         meanTestAccuracies, stdTestAccuracies,
                         meanDuration)
-np.save("ForwardWrappingMeanAndStdData", saveData)
+np.save("ForwardWrappingMeanAndStdDataWithPCA", saveData)
         

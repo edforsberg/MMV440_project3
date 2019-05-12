@@ -21,4 +21,4 @@ NOISE_STD = 5
 
 constantFilterThreshold = 10 
 correlationFilterThreshold = 1
-maxNumberOfFeaturesToRemove = NUMBER_OF_FEATURES-1
+maxNumberOfFeaturesToRemove = NUMBER_OF_FEATURES

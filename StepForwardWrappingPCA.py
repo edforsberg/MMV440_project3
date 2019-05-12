@@ -143,16 +143,24 @@ for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
 
 meanDuration = np.mean(durations)
 
+meanTrainAccuracies.reverse()
+stdTrainAccuracies.reverse()
+meanTestAccuracies.reverse()
+stdTestAccuracies.reverse()
+
 plt.figure()
 #plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
 #             yerr=stdTrainAccuracies, label="Training Set",
 #             fmt='_', capthick=2, capsize=10)
 plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTestAccuracies,
-             yerr=stdTestAccuracies, label="Test Set",
+             yerr=stdTestAccuracies, label="Test data",
              capthick=2, capsize=10)
-plt.title("Number Of Features to Select vs Accuracy With PCA\n" +
+plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
+             yerr=stdTrainAccuracies, label="Training data",
+             capthick=2, capsize=10)
+plt.title("Number Of Features to remove vs Accuracy With PCA\n" +
           "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
-plt.xlabel("Number Of Features to Select")
+plt.xlabel("Number Of Features to remove")
 plt.ylabel("Accuracy")
 plt.legend()
 plt.show()
@@ -160,5 +168,5 @@ plt.show()
 saveData = AccuracyData(meanTrainAccuracies, stdTrainAccuracies,
                         meanTestAccuracies, stdTestAccuracies,
                         meanDuration)
-np.save("BackwardWrappingMeanAndStdDataWithPCA", saveData)
+np.save("ForwardWrappingMeanAndStdDataWithPCA", saveData)
         
