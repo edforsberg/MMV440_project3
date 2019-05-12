@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Sun May 12 22:35:11 2019
+
+@author: ErikF
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Wed May  8 15:10:49 2019
 
 @author: ErikF (and Kaan) :)
@@ -55,7 +62,7 @@ NUMBER_OF_NON_NOISY_FEATURES = NUMBER_OF_FEATURES - NUMBER_OF_FEATURES_TO_PRUNE
 
 NUMBER_OF_FEATURES_TO_SELECT_RANGE = range(1, NUMBER_OF_FEATURES)
 
-def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToSelect):
+def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToSelect, times):
     np.random.seed(randomNumberSeed)
 
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
@@ -88,6 +95,7 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToSelect):
     xTestWithSelectedFeatures = X_test[:, features.k_feature_idx_]
 
     knn = KNeighborsClassifier(n_neighbors)
+    a = time()
     knn.fit(xTrainWithSelectedFeatures, y_train)
 
     train_pred = knn.predict(xTrainWithSelectedFeatures)
@@ -95,8 +103,10 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToSelect):
 
     test_pred = knn.predict(xTestWithSelectedFeatures)
     accuracyTest = accuracy_score(y_test, test_pred)
+    b = time()
+    times[nFeaturesToSelect] = times[nFeaturesToSelect]+b-a
 
-    return (accuracyTrain, accuracyTest)
+    return (times)
 
 class AccuracyData:
 
@@ -112,6 +122,7 @@ meanTestAccuracies = []
 stdTrainAccuracies = []
 stdTestAccuracies = []
 
+times = np.zeros(12)
 for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
 
     trainAccuracies = []
@@ -120,43 +131,40 @@ for nFeatures in NUMBER_OF_FEATURES_TO_SELECT_RANGE:
     durations = []
 
     for seed in RANDOM_NUMBER_SEEDS:
-        a = time()
-        trainAccuracy, testAccuracy = runWrappingAndGetAccuraciesWithPCA(seed, nFeatures)
-        b = time()
-        trainAccuracies.append(trainAccuracy)
-        testAccuracies.append(testAccuracy)
-        durations.append(b-a)
-
-    meanTrainAccuracy = np.mean(trainAccuracies)
-    stdTrainAccuracy = np.std(trainAccuracies)
-
-    meanTestAccuracy = np.mean(testAccuracies)
-    stdTestAccuracy = np.std(testAccuracies)
-
-    meanTime = np.mean(durations)
-
-    meanTrainAccuracies.append(meanTrainAccuracy)
-    meanTestAccuracies.append(meanTestAccuracy)
-    stdTrainAccuracies.append(stdTrainAccuracy)
-    stdTestAccuracies.append(stdTestAccuracy)
-    durations.append(meanTime)
-
-meanDuration = np.mean(durations)
-
-meanTrainAccuracies.reverse()
-stdTrainAccuracies.reverse()
-meanTestAccuracies.reverse()
-stdTestAccuracies.reverse()
+       # a = time()
+        times = runWrappingAndGetAccuraciesWithPCA(seed, nFeatures, times)
+       # b = time()
+#        trainAccuracies.append(trainAccuracy)
+#        testAccuracies.append(testAccuracy)
+#        durations.append(b-a)
+#
+#    meanTrainAccuracy = np.mean(trainAccuracies)
+#    stdTrainAccuracy = np.std(trainAccuracies)
+#
+#    meanTestAccuracy = np.mean(testAccuracies)
+#    stdTestAccuracy = np.std(testAccuracies)
+#
+#    meanTime = np.mean(durations)
+#
+#    meanTrainAccuracies.append(meanTrainAccuracy)
+#    meanTestAccuracies.append(meanTestAccuracy)
+#    stdTrainAccuracies.append(stdTrainAccuracy)
+#    stdTestAccuracies.append(stdTestAccuracy)
+#    durations.append(meanTime)
+#
+#meanDuration = np.mean(durations)
+#
+#meanTrainAccuracies.reverse()
+#stdTrainAccuracies.reverse()
+#meanTestAccuracies.reverse()
+#stdTestAccuracies.reverse()
 
 plt.figure()
 #plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
 #             yerr=stdTrainAccuracies, label="Training Set",
 #             fmt='_', capthick=2, capsize=10)
-plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTestAccuracies,
+plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, times,
              yerr=stdTestAccuracies, label="Test data",
-             capthick=2, capsize=10)
-plt.errorbar(NUMBER_OF_FEATURES_TO_SELECT_RANGE, meanTrainAccuracies,
-             yerr=stdTrainAccuracies, label="Training data",
              capthick=2, capsize=10)
 plt.title("Number Of Features to remove vs Accuracy With PCA\n" +
           "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
