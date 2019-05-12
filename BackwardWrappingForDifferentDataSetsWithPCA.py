@@ -73,12 +73,16 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeaturesToRemove):
 
 class AccuracyData:
 
-    def __init__(self, meanTest, stdTest, meanTime=None):
+    def __init__(self, meanTrain, stdTrain, meanTest, stdTest, meanTime=None):
+        self.meanTrain = meanTrain
+        self.stdTrain = stdTrain
         self.meanTest = meanTest
         self.stdTest = stdTest
         self.meanTime = meanTime
 
+meanTrainAccuracies = []
 meanTestAccuracies = []
+stdTrainAccuracies = []
 stdTestAccuracies = []
 
 for nFeatures in NUMBER_OF_FEATURES_TO_REMOVE_RANGE:
@@ -96,27 +100,33 @@ for nFeatures in NUMBER_OF_FEATURES_TO_REMOVE_RANGE:
         testAccuracies.append(testAccuracy)
         durations.append(b-a)
 
+    meanTrainAccuracy = np.mean(trainAccuracies)
+    stdTrainAccuracy = np.std(trainAccuracies)
     meanTestAccuracy = np.mean(testAccuracies)
     stdTestAccuracy = np.std(testAccuracies)
 
+    meanTrainAccuracies.append(meanTrainAccuracy)
     meanTestAccuracies.append(meanTestAccuracy)
+    stdTrainAccuracies.append(stdTrainAccuracy)
     stdTestAccuracies.append(stdTestAccuracy)
 
 meanDuration = np.mean(durations)
 
 plt.figure()
+plt.errorbar(NUMBER_OF_FEATURES_TO_REMOVE_RANGE, meanTrainAccuracies,
+             yerr=stdTrainAccuracies, label="Train Set",
+             capthick=2, capsize=10)
 plt.errorbar(NUMBER_OF_FEATURES_TO_REMOVE_RANGE, meanTestAccuracies,
              yerr=stdTestAccuracies, label="Test Set",
              capthick=2, capsize=10)
-plt.title("Wrapping - Backward Elimination\n"+
-          "Number Of Features Removed vs Accuracy With PCA\n" +
+plt.title("Number Of Features Removed vs Accuracy With PCA\n" +
           "Number Of Non-Noisy Features: {}".format(NUMBER_OF_NON_NOISY_FEATURES))
 plt.xlabel("Number Of Features Removed")
 plt.ylabel("Accuracy")
 plt.legend()
 plt.show()
 
-saveData = AccuracyData(meanTestAccuracies, stdTestAccuracies,
-                        meanDuration)
+saveData = AccuracyData(meanTrainAccuracies, stdTrainAccuracies,
+                        meanTestAccuracies, stdTestAccuracies)
 np.save("BackwardWrappingMeanAndStdDataWithPCA", saveData)
 

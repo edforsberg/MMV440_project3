@@ -69,7 +69,9 @@ def runWrappingAndGetAccuracies(randomNumberSeed, nFeaturesToRemove):
 
 class AccuracyData:
 
-    def __init__(self, meanTest, stdTest, meanTime=None):
+    def __init__(self, meanTrain, stdTrain, meanTest, stdTest, meanTime=None):
+        self.meanTrain = meanTrain
+        self.stdTrain = stdTrain
         self.meanTest = meanTest
         self.stdTest = stdTest
         self.meanTime = meanTime
@@ -79,14 +81,10 @@ meanTestAccuracies = []
 stdTrainAccuracies = []
 stdTestAccuracies = []
 
-meanTimes = []
-
 for nFeatures in NUMBER_OF_FEATURES_TO_REMOVE_RANGE:
 
     trainAccuracies = []
     testAccuracies = []
-
-    durations = []
 
     for seed in RANDOM_NUMBER_SEEDS:
         trainAccuracy, testAccuracy = runWrappingAndGetAccuracies(seed, nFeatures)
@@ -104,6 +102,9 @@ for nFeatures in NUMBER_OF_FEATURES_TO_REMOVE_RANGE:
     stdTestAccuracies.append(stdTestAccuracy)
 
 plt.figure()
+plt.errorbar(NUMBER_OF_FEATURES_TO_REMOVE_RANGE, meanTrainAccuracies,
+             yerr=stdTrainAccuracies, label="Train Set",
+             capthick=2, capsize=10)
 plt.errorbar(NUMBER_OF_FEATURES_TO_REMOVE_RANGE, meanTestAccuracies,
              yerr=stdTestAccuracies, label="Test Set",
              capthick=2, capsize=10)
@@ -114,6 +115,7 @@ plt.ylabel("Accuracy")
 plt.legend()
 plt.show()
 
-saveData = AccuracyData(meanTestAccuracies, stdTestAccuracies)
+saveData = AccuracyData(meanTrainAccuracies, stdTrainAccuracies,
+                        meanTestAccuracies, stdTestAccuracies)
 np.save("BackwardWrappingMeanAndStdData", saveData)
 
