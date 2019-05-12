@@ -16,12 +16,12 @@ from Preprocessing import transfromFeaturesToNoiseRandomly
 from time import time
 
 from settings import (NUMBER_OF_CLASSES, NUMBER_OF_RECORDS_PER_CLASS,
-                        FEATURE_MEAN_RANGE, NUMBER_OF_FEATURES_TO_PRUNE,
+                        FEATURE_MEAN_RANGE,
                         NOISE_MEAN, NOISE_STD,
                         TEST_SIZE_PERCENTAGE)
 
 RANDOM_NUMBER_SEEDS = range(0,20)
-NUMBER_OF_FEATURES = range(10,1000,100)
+NUMBER_OF_FEATURES = range(2,20)
 
 def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeatures, nFeaturesToSelect):
     np.random.seed(randomNumberSeed)
@@ -30,6 +30,7 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeatures, nFeaturesToS
                                 NUMBER_OF_RECORDS_PER_CLASS, FEATURE_MEAN_RANGE,
                                 randomNumberSeed)
 
+    NUMBER_OF_FEATURES_TO_PRUNE = nFeatures - nFeaturesToSelect
     trainData = transfromFeaturesToNoiseRandomly(data, labels,
                                      NUMBER_OF_FEATURES_TO_PRUNE,
                                      NOISE_MEAN, NOISE_STD,
@@ -40,14 +41,15 @@ def runWrappingAndGetAccuraciesWithPCA(randomNumberSeed, nFeatures, nFeaturesToS
 
     n_neighbors = 5
     a = time()
-    _ = SequentialFeatureSelector(KNeighborsClassifier(n_neighbors),
+    feature_selector = SequentialFeatureSelector(KNeighborsClassifier(n_neighbors),
                k_features=nFeaturesToSelect,
                forward=False,
                verbose=0,
                cv=5,
                n_jobs=-1)
+    _ = feature_selector.fit(X_train, y_train)
     b = time()
-    return (b-a)*1000
+    return (b-a)
 
 meanDurations = []
 stdDurations = []
@@ -68,14 +70,13 @@ for nFeatures in NUMBER_OF_FEATURES:
     meanDurations.append(meanTime)
     stdDurations.append(stdTime)
 
-plt.figure(figsize=(8,8))
-plt.ylim([0,1])
+plt.figure(figsize=(8,6))
 plt.errorbar(NUMBER_OF_FEATURES, meanDurations,
              yerr=stdDurations, label="Mean Duration",
              capthick=2, capsize=10)
-plt.title("Number Of Features in Data Set vs Duration")
+plt.title("Backward Elimination\nNumber Of Features in Data Set vs Duration")
 plt.xlabel("Number Of Dimenions in Data Set")
-plt.ylabel("Duration (Milliseconds)")
+plt.ylabel("Duration (Seconds)")
 plt.legend()
 plt.show()
 
