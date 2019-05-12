@@ -160,5 +160,5 @@ plt.show()
 saveData = AccuracyData(meanTrainAccuracies, stdTrainAccuracies,
                         meanTestAccuracies, stdTestAccuracies,
                         meanDuration)
-np.save("BackwardWrappingMeanAndStdDataWithPCA", saveData)
+np.save("ForwardWrappingMeanAndStdDataWithPCA", saveData)
         
