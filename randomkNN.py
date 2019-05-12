@@ -23,7 +23,7 @@ for r in randomSeeds:
     data, labels = generateData(NUMBER_OF_CLASSES, NUMBER_OF_FEATURES,
                                 NUMBER_OF_RECORDS_PER_CLASS, FEATURE_MEAN_RANGE, r)
     
-    prunedTrainData = transfromFeaturesToNoiseRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE, NOISE_MEAN, NOISE_STD, r)
+    prunedTrainData = transfromFeaturesToNoiseRandomly(data, labels, NUMBER_OF_FEATURES_TO_PRUNE, NOISE_MEAN, 10, r)
     
     X_train, X_test, y_train, y_test = train_test_split(prunedTrainData, labels,
                                                     test_size=TEST_SIZE_PERCENTAGE)
@@ -35,7 +35,9 @@ for r in randomSeeds:
     accuracy[0, r] = accuracy_score(y_test, y_pred)
 
     for i in range(1, maxNumberOfFeaturesToRemove):
-        X_train_i, fisherScores, removedFeatures = fisherScoreFilter(i, X_train, y_train, NUMBER_OF_CLASSES)
+        removedFeatures = np.random.choice(12, i)
+
+        X_train_i = np.delete(X_train, np.s_[removedFeatures], axis=1)
 
         classifier = KNeighborsClassifier(n_neighbors=k)  
         classifier.fit(X_train_i, y_train)
@@ -51,7 +53,9 @@ plt.figure()
 plt.plot(averageAccuracy)
 plt.xlabel('Number of features removed')
 plt.ylabel('Accuracy')
-plt.title('Filtering based on Fisher\'s scoring')
+plt.title('Random filtering of features')
 plt.legend(['Average accuracy of kNN (k = 5, number of runs = 20)'])
 plt.grid()
 plt.show()
+
+
