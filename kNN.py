@@ -33,7 +33,7 @@ for r in randomSeeds:
     y_pred = classifier.predict(X_test)
      
     accuracy[0, r] = accuracy_score(y_test, y_pred)
-
+    
     for i in range(1, maxNumberOfFeaturesToRemove):
         X_train_i, fisherScores, removedFeatures = fisherScoreFilter(i, X_train, y_train, NUMBER_OF_CLASSES)
         
@@ -46,7 +46,7 @@ for r in randomSeeds:
         accuracy[i, r] = accuracy_score(y_test, y_pred)
 
 averageAccuracy = np.mean(accuracy, axis=1)
-
+print(accuracy[8, :])
 
 accuracy_rand = np.zeros((maxNumberOfFeaturesToRemove, nRuns))
 
